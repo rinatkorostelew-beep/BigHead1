@@ -1,6 +1,7 @@
 package com.bighead
 
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -32,6 +33,29 @@ class MainActivity : AppCompatActivity() {
         val btnStop = findViewById<Button>(R.id.btnStop)
         val tvKey = findViewById<TextView>(R.id.tvKey)
 
+        val arc1 = findViewById<android.view.View>(R.id.arc1)
+        val arc2 = findViewById<android.view.View>(R.id.arc2)
+        val arc3 = findViewById<android.view.View>(R.id.arc3)
+        val core = findViewById<android.view.View>(R.id.coreCircle)
+
+        fun makeRing(color: Int, strokeDp: Int): GradientDrawable {
+            val d = GradientDrawable()
+            d.shape = GradientDrawable.OVAL
+            d.setColor(android.graphics.Color.TRANSPARENT)
+            val px = (strokeDp * resources.displayMetrics.density).toInt()
+            d.setStroke(px, color)
+            return d
+        }
+
+        arc1.background = makeRing(0xFFA78BFA.toInt(), 2)
+        arc2.background = makeRing(0xFF7C3AED.toInt(), 2)
+        arc3.background = makeRing(0xFF6D28D9.toInt(), 2)
+
+        val coreDrawable = GradientDrawable()
+        coreDrawable.shape = GradientDrawable.OVAL
+        coreDrawable.setColor(0xFFA78BFA.toInt())
+        core.background = coreDrawable
+
         if (savedKey != null && VALID_KEYS.contains(savedKey)) {
             layoutKey.visibility = android.view.View.GONE
             layoutMain.visibility = android.view.View.VISIBLE
@@ -43,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnGetKey.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_aim_bot")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_Aim_bot")))
         }
 
         btnActivate.setOnClickListener {
