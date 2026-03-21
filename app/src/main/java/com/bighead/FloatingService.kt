@@ -22,6 +22,7 @@ class FloatingService : Service() {
     override fun onCreate() {
         super.onCreate()
         wm = getSystemService(WINDOW_SERVICE) as WindowManager
+
         root = LayoutInflater.from(this).inflate(R.layout.layout_overlay, null)
 
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -34,24 +35,45 @@ class FloatingService : Service() {
             type,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
-        ).also { it.gravity = Gravity.BOTTOM or Gravity.START; it.x = 40; it.y = 120 }
+        )
+        lp.gravity = Gravity.TOP or Gravity.START
+        lp.x = 40
+        lp.y = 200
 
         wm.addView(root, lp)
 
-        root.findViewById<SeekBar>(R.id.seekHead).setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        val seekBar = root.findViewById<SeekBar>(R.id.seekHead)
+        val tvVal = root.findViewById<TextView>(R.id.tvValue)
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar, p: Int, f: Boolean) {
-                root.findViewById<TextView>(R.id.tvValue).text = "${p + 50}%"
+                tvVal.text = "${p + 50}%"
             }
-            override fun onStartTrackingTouch(s: SeekBar) {}
+            override fun onStartTrackingTouch(s: SeekBar) {
+                lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                wm.updateViewLayout(root, lp)
+            }
             override fun onStopTrackingTouch(s: SeekBar) {}
         })
 
-        root.findViewById<View>(R.id.btnClose).setOnClickListener { stopSelf() }
+        root.findViewById<View>(R.id.btnClose).setOnClickListener {
+            stopSelf()
+        }
 
         root.findViewById<View>(R.id.dragHandle).setOnTouchListener { _, e ->
             when (e.action) {
-                MotionEvent.ACTION_DOWN -> { ix = lp.x; iy = lp.y; tx = e.rawX; ty = e.rawY; true }
-                MotionEvent.ACTION_MOVE -> { lp.x = ix + (e.rawX - tx).toInt(); lp.y = iy - (e.rawY - ty).toInt(); wm.updateViewLayout(root, lp); true }
+                MotionEvent.ACTION_DOWN -> {
+                    ix = lp.x; iy = lp.y
+                    tx = e.rawX; ty = e.rawY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    lp.x = ix + (e.rawX - tx).toInt()
+                    lp.y = iy + (e.rawY - ty).toInt()
+                    wm.updateViewLayout(root, lp)
+                    true
+                }
                 else -> false
             }
         }
