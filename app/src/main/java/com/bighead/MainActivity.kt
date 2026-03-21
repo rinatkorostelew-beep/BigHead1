@@ -1,5 +1,5 @@
 package com.bighead
-
+ 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
@@ -20,18 +20,18 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
+ 
 class MainActivity : AppCompatActivity() {
-
+ 
     val VALID_KEYS = listOf("BIGHEAD-1234", "BIGHEAD-5678", "BIGHEAD-ABCD")
-
+ 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+ 
         val prefs = getSharedPreferences("bighead", MODE_PRIVATE)
         val savedKey = prefs.getString("key", null)
-
+ 
         val layoutKey = findViewById<View>(R.id.layoutKey)
         val layoutMain = findViewById<View>(R.id.layoutMain)
         val etKey = findViewById<EditText>(R.id.etKey)
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         val arc2 = findViewById<View>(R.id.arc2)
         val arc3 = findViewById<View>(R.id.arc3)
         val core = findViewById<View>(R.id.coreCircle)
-
+ 
         fun makeRing(color: Int, strokeDp: Int): GradientDrawable {
             val d = GradientDrawable()
             d.shape = GradientDrawable.OVAL
@@ -53,28 +53,28 @@ class MainActivity : AppCompatActivity() {
             d.setStroke(px, color)
             return d
         }
-
+ 
         arc1.background = makeRing(0xFFA78BFA.toInt(), 2)
         arc2.background = makeRing(0xFF7C3AED.toInt(), 2)
         arc3.background = makeRing(0xFF6D28D9.toInt(), 2)
-
+ 
         val coreDrawable = GradientDrawable()
         coreDrawable.shape = GradientDrawable.OVAL
         coreDrawable.setColor(0xFFA78BFA.toInt())
         core.background = coreDrawable
-
+ 
         fun showMain() {
-            layoutKey.visibility = View.GONE
+            layoutKey.visibility = View.INVISIBLE
             layoutMain.visibility = View.VISIBLE
-
+ 
             btnStart.alpha = 0f
             btnStop.alpha = 0f
             tvKey.alpha = 0f
-
+ 
             Handler(Looper.getMainLooper()).postDelayed({
                 startCircleAnimations()
                 spawnParticles()
-
+ 
                 btnStart.animate().alpha(1f).setDuration(500)
                     .setInterpolator(OvershootInterpolator()).setStartDelay(200).start()
                 btnStop.animate().alpha(1f).setDuration(500)
@@ -82,19 +82,19 @@ class MainActivity : AppCompatActivity() {
                 tvKey.animate().alpha(1f).setDuration(400).setStartDelay(500).start()
             }, 300)
         }
-
+ 
         if (savedKey != null && VALID_KEYS.contains(savedKey)) {
             tvKey.text = savedKey
             showMain()
         } else {
             layoutKey.visibility = View.VISIBLE
-            layoutMain.visibility = View.GONE
+            layoutMain.visibility = View.INVISIBLE
         }
-
+ 
         btnGetKey.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_Aim_bot")))
         }
-
+ 
         btnActivate.setOnClickListener {
             val entered = etKey.text.toString().trim().uppercase()
             if (VALID_KEYS.contains(entered)) {
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 }.start()
             }
         }
-
+ 
         btnStart.setOnClickListener {
             btnStart.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).withEndAction {
                 btnStart.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Big Head запущен!", Toast.LENGTH_SHORT).show()
             }
         }
-
+ 
         btnStop.setOnClickListener {
             btnStop.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).withEndAction {
                 btnStop.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Выключен", Toast.LENGTH_SHORT).show()
         }
     }
-
+ 
     private fun spawnParticles() {
         val root = findViewById<android.view.ViewGroup>(android.R.id.content)
         val display = windowManager.defaultDisplay
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         display.getSize(size)
         val screenW = size.x
         val screenH = size.y
-
+ 
         for (i in 0..15) {
             val dot = View(this)
             val dp = (2 + Math.random() * 4).toInt()
@@ -155,10 +155,10 @@ class MainActivity : AppCompatActivity() {
             dot.layoutParams = lp
             dot.alpha = 0f
             root.addView(dot)
-
+ 
             val delay = (Math.random() * 3000).toLong()
             val dur = (3000 + Math.random() * 4000).toLong()
-
+ 
             dot.animate()
                 .translationY((-screenH * (0.5 + Math.random() * 0.5)).toFloat())
                 .alpha(0.5f)
@@ -168,36 +168,36 @@ class MainActivity : AppCompatActivity() {
                 .start()
         }
     }
-
+ 
     private fun startCircleAnimations() {
         val arc1 = findViewById<View>(R.id.arc1)
         val arc2 = findViewById<View>(R.id.arc2)
         val arc3 = findViewById<View>(R.id.arc3)
         val core = findViewById<View>(R.id.coreCircle)
-
+ 
         val spin1 = ObjectAnimator.ofFloat(arc1, "rotation", 0f, 360f)
         spin1.duration = 1500
         spin1.repeatCount = ValueAnimator.INFINITE
         spin1.interpolator = LinearInterpolator()
         spin1.start()
-
+ 
         val spin2 = ObjectAnimator.ofFloat(arc2, "rotation", 0f, -360f)
         spin2.duration = 1000
         spin2.repeatCount = ValueAnimator.INFINITE
         spin2.interpolator = LinearInterpolator()
         spin2.start()
-
+ 
         val spin3 = ObjectAnimator.ofFloat(arc3, "rotation", 0f, 360f)
         spin3.duration = 2000
         spin3.repeatCount = ValueAnimator.INFINITE
         spin3.interpolator = LinearInterpolator()
         spin3.start()
-
+ 
         val scaleX = ObjectAnimator.ofFloat(core, "scaleX", 1f, 1.2f, 1f)
         scaleX.duration = 1600
         scaleX.repeatCount = ValueAnimator.INFINITE
         scaleX.start()
-
+ 
         val scaleY = ObjectAnimator.ofFloat(core, "scaleY", 1f, 1.2f, 1f)
         scaleY.duration = 1600
         scaleY.repeatCount = ValueAnimator.INFINITE
