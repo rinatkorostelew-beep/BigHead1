@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         btnGetKey.setOnClickListener {
             // замени ссылку на своего Telegram бота
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/ТУТ_ИМЯ_ТВОЕГО_БОТА")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_Aim_bot")))
         }
 
         btnActivate.setOnClickListener {
