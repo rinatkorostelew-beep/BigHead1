@@ -1,10 +1,14 @@
 package com.bighead
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
@@ -67,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             btnStop.alpha = 0f
             tvKey.alpha = 0f
 
-            arc1.post {
+            Handler(Looper.getMainLooper()).postDelayed({
                 startCircleAnimations()
                 spawnParticles()
 
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 btnStop.animate().alpha(1f).setDuration(500)
                     .setInterpolator(OvershootInterpolator()).setStartDelay(350).start()
                 tvKey.animate().alpha(1f).setDuration(400).setStartDelay(500).start()
-            }
+            }, 300)
         }
 
         if (savedKey != null && VALID_KEYS.contains(savedKey)) {
@@ -171,23 +175,32 @@ class MainActivity : AppCompatActivity() {
         val arc3 = findViewById<View>(R.id.arc3)
         val core = findViewById<View>(R.id.coreCircle)
 
-        fun spinForever(view: View, duration: Long, reverse: Boolean) {
-            val deg = if (reverse) -360f else 360f
-            view.animate().rotationBy(deg).setDuration(duration)
-                .setInterpolator(LinearInterpolator())
-                .withEndAction { spinForever(view, duration, reverse) }.start()
-        }
+        val spin1 = ObjectAnimator.ofFloat(arc1, "rotation", 0f, 360f)
+        spin1.duration = 1500
+        spin1.repeatCount = ValueAnimator.INFINITE
+        spin1.interpolator = LinearInterpolator()
+        spin1.start()
 
-        fun pulseForever(view: View) {
-            view.animate().scaleX(1.2f).scaleY(1.2f).setDuration(800).withEndAction {
-                view.animate().scaleX(1f).scaleY(1f).setDuration(800)
-                    .withEndAction { pulseForever(view) }.start()
-            }.start()
-        }
+        val spin2 = ObjectAnimator.ofFloat(arc2, "rotation", 0f, -360f)
+        spin2.duration = 1000
+        spin2.repeatCount = ValueAnimator.INFINITE
+        spin2.interpolator = LinearInterpolator()
+        spin2.start()
 
-        spinForever(arc1, 1500, false)
-        spinForever(arc2, 1000, true)
-        spinForever(arc3, 2000, false)
-        pulseForever(core)
+        val spin3 = ObjectAnimator.ofFloat(arc3, "rotation", 0f, 360f)
+        spin3.duration = 2000
+        spin3.repeatCount = ValueAnimator.INFINITE
+        spin3.interpolator = LinearInterpolator()
+        spin3.start()
+
+        val scaleX = ObjectAnimator.ofFloat(core, "scaleX", 1f, 1.2f, 1f)
+        scaleX.duration = 1600
+        scaleX.repeatCount = ValueAnimator.INFINITE
+        scaleX.start()
+
+        val scaleY = ObjectAnimator.ofFloat(core, "scaleY", 1f, 1.2f, 1f)
+        scaleY.duration = 1600
+        scaleY.repeatCount = ValueAnimator.INFINITE
+        scaleY.start()
     }
 }
