@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -34,15 +35,15 @@ class MainActivity : AppCompatActivity() {
         if (savedKey != null && VALID_KEYS.contains(savedKey)) {
             layoutKey.visibility = android.view.View.GONE
             layoutMain.visibility = android.view.View.VISIBLE
-            tvKey.text = "Ключ: $savedKey"
+            tvKey.text = savedKey
+            startCircleAnimations()
         } else {
             layoutKey.visibility = android.view.View.VISIBLE
             layoutMain.visibility = android.view.View.GONE
         }
 
         btnGetKey.setOnClickListener {
-            // замени ссылку на своего Telegram бота
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_Aim_bot")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Head_aim_bot")))
         }
 
         btnActivate.setOnClickListener {
@@ -51,11 +52,11 @@ class MainActivity : AppCompatActivity() {
                 prefs.edit().putString("key", entered).apply()
                 layoutKey.visibility = android.view.View.GONE
                 layoutMain.visibility = android.view.View.VISIBLE
-                tvKey.text = "Ключ: $entered"
+                tvKey.text = entered
+                startCircleAnimations()
                 Toast.makeText(this, "Активировано!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Неверный ключ!", Toast.LENGTH_SHORT).show()
-                etKey.setBackgroundColor(0x33FF0000)
             }
         }
 
@@ -72,5 +73,35 @@ class MainActivity : AppCompatActivity() {
             stopService(Intent(this, FloatingService::class.java))
             Toast.makeText(this, "Выключен", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun startCircleAnimations() {
+        val arc1 = findViewById<android.view.View>(R.id.arc1)
+        val arc2 = findViewById<android.view.View>(R.id.arc2)
+        val arc3 = findViewById<android.view.View>(R.id.arc3)
+        val core = findViewById<android.view.View>(R.id.coreCircle)
+
+        fun spinForever(view: android.view.View, duration: Long, reverse: Boolean) {
+            val deg = if (reverse) -360f else 360f
+            view.animate()
+                .rotationBy(deg)
+                .setDuration(duration)
+                .setInterpolator(LinearInterpolator())
+                .withEndAction { spinForever(view, duration, reverse) }
+                .start()
+        }
+
+        fun pulseForever(view: android.view.View) {
+            view.animate().scaleX(1.2f).scaleY(1.2f).setDuration(800)
+                .withEndAction {
+                    view.animate().scaleX(1f).scaleY(1f).setDuration(800)
+                        .withEndAction { pulseForever(view) }.start()
+                }.start()
+        }
+
+        spinForever(arc1, 1500, false)
+        spinForever(arc2, 1000, true)
+        spinForever(arc3, 2000, false)
+        pulseForever(core)
     }
 }
