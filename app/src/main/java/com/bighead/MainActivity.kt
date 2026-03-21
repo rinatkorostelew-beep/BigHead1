@@ -1,8 +1,5 @@
 package com.bighead
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -70,13 +67,13 @@ class MainActivity : AppCompatActivity() {
             btnStop.alpha = 0f
             tvKey.alpha = 0f
 
-            layoutMain.post {
+            arc1.post {
                 startCircleAnimations()
                 spawnParticles()
 
-                btnStart.animate().alpha(1f).translationYBy(-20f).setDuration(500)
+                btnStart.animate().alpha(1f).setDuration(500)
                     .setInterpolator(OvershootInterpolator()).setStartDelay(200).start()
-                btnStop.animate().alpha(1f).translationYBy(-20f).setDuration(500)
+                btnStop.animate().alpha(1f).setDuration(500)
                     .setInterpolator(OvershootInterpolator()).setStartDelay(350).start()
                 tvKey.animate().alpha(1f).setDuration(400).setStartDelay(500).start()
             }
